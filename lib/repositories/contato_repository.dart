@@ -4,7 +4,7 @@ import 'package:app_contatos/models/contatos_back4app_model.dart';
 import '../models/contato_model.dart';
 import 'dio/back4app_custom_dio.dart';
 
-class CepBack4appRepository {
+class ContatoRepository {
   final _dioCustom = Back4appCustomDio();
 
   Future<ContatosBack4appModel> findAll() async {

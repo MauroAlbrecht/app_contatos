@@ -38,6 +38,7 @@ dependencies:
   custom_image_crop: ^0.0.12
   intl_phone_number_input: ^0.7.3+1
   font_awesome_flutter: ^10.3.0
+  mask_text_input_formatter: ^2.5.0
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.

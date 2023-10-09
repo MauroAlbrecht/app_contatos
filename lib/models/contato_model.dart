@@ -2,13 +2,13 @@ class ContatoModel {
   String? objectId;
   String nome = '';
   String telefone = '';
-  String pathFoto = '';
+  String imgUrl = '';
 
   ContatoModel(
     this.objectId,
     this.nome,
     this.telefone,
-    this.pathFoto,
+    this.imgUrl,
   );
 
   ContatoModel.vazio();
@@ -17,7 +17,7 @@ class ContatoModel {
     objectId = json['objectId'];
     nome = json['nome'];
     telefone = json['telefone'];
-    pathFoto = json['path_foto'];
+    imgUrl = json['imgUrl'];
   }
 
   Map<String, dynamic> toJson() {
@@ -25,7 +25,7 @@ class ContatoModel {
     data['objectId'] = this.objectId;
     data['telefone'] = this.telefone;
     data['nome'] = this.nome;
-    data['path_foto'] = this.pathFoto;
+    data['imgUrl'] = this.imgUrl;
 
     return data;
   }
@@ -34,7 +34,7 @@ class ContatoModel {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['telefone'] = this.telefone;
     data['nome'] = this.nome;
-    data['path_foto'] = this.pathFoto;
+    data['imgUrl'] = this.imgUrl;
 
     return data;
   }
