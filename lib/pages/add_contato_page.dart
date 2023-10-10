@@ -1,12 +1,17 @@
+import 'dart:io';
+
 import 'package:app_contatos/models/contato_model.dart';
 import 'package:app_contatos/repositories/contato_repository.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 
 class AddContatoPage extends StatefulWidget {
+  ContatoModel contato;
+
+  AddContatoPage(this.contato);
+
   @override
   _AddContatoPageState createState() => _AddContatoPageState();
 }
@@ -15,12 +20,21 @@ class _AddContatoPageState extends State<AddContatoPage> {
   var controllerNome = TextEditingController(text: '');
   var controllerTelefone = TextEditingController(text: '');
   var repository = ContatoRepository();
-  var imageUrl = '';
   var maskFormatter = MaskTextInputFormatter(
     mask: '+## (##) #####-####',
     filter: {"#": RegExp(r'[0-9]')},
     type: MaskAutoCompletionType.lazy,
   );
+  File? foto;
+  @override
+  void initState() {
+    controllerNome.text = widget.contato.nome;
+    controllerTelefone.text = widget.contato.telefone;
+    if(widget.contato.imgUrl.isNotEmpty){
+      foto = File(widget.contato.imgUrl);
+    }
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,10 +52,14 @@ class _AddContatoPageState extends State<AddContatoPage> {
                   final ImagePicker _picker = ImagePicker();
                   final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
                   if(image != null) {
-                    imageUrl = image.path;
+                    widget.contato.imgUrl = image.path;
+                    foto = File(widget.contato.imgUrl);
+                    setState(() {
+
+                    });
                   }
                 },
-                child: Container(
+                child: foto == null ? Container(
                   width: 120, // Defina a largura do círculo
                   height: 120, // Defina a altura do círculo
                   decoration: const BoxDecoration(
@@ -55,6 +73,11 @@ class _AddContatoPageState extends State<AddContatoPage> {
                       size: 50, // Tamanho do ícone
                     ),
                   ),
+                ): ClipOval(
+                  child: CircleAvatar(radius: 65,
+                      child: foto == null
+                          ? const Icon(Icons.image)
+                          : Image.file(foto!),),
                 ),
               ),
               const SizedBox(
@@ -103,7 +126,7 @@ class _AddContatoPageState extends State<AddContatoPage> {
                     var contato = ContatoModel.vazio();
                     contato.telefone = controllerTelefone.text;
                     contato.nome = controllerNome.text;
-                    contato.imgUrl = imageUrl;
+                    contato.imgUrl = widget.contato.imgUrl;
                     repository.criar(contato);
 
                     Navigator.pop(context, true);

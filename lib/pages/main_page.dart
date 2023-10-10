@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:app_contatos/models/contato_model.dart';
 import 'package:app_contatos/models/contatos_back4app_model.dart';
 import 'package:app_contatos/pages/add_contato_page.dart';
 import 'package:app_contatos/repositories/contato_repository.dart';
@@ -39,47 +42,60 @@ class _MainPageState extends State<MainPage> {
                 CircularProgressIndicator(),
               ],
             ))
-          : Container(
-              child: ListView.builder(
-                  itemCount: _contatos.contatos.length,
-                  itemBuilder: (BuildContext bc, int index) {
-                    return Dismissible(
-                      key: Key(_contatos.contatos[index].objectId!),
-                      child: GestureDetector(
-                        onTap: () async {
-                          // var ret = await Navigator.push(
-                          //   context,
-                          //    MaterialPageRoute(builder: (context) => EdicaoCepPage(_ceps.ceps[index]),),
-                          // );
+          : ListView.builder(
+              itemCount: _contatos.contatos.length,
+              itemBuilder: (BuildContext bc, int index) {
+                File? foto;
+                if (_contatos.contatos[index].imgUrl.isNotEmpty) {
+                  foto = File(_contatos.contatos[index].imgUrl);
+                }
+                return Dismissible(
+                  key: Key(_contatos.contatos[index].objectId!),
+                  child: GestureDetector(
+                    onTap: () async {
+                       var ret = await Navigator.push(
+                        context,
+                         MaterialPageRoute(builder: (context) => AddContatoPage(_contatos.contatos[index]),),
+                       );
 
-                          // if (ret != null && ret) {
-                          //    carregaCeps();
-                          //  }
-                        },
-                        child: ListTile(
-                          title: Text(_contatos.contatos[index].nome.toString()),
-                          subtitle: Text('${_contatos.contatos[index].telefone}'),
-                          trailing: InkWell(
-                              child: const Icon(Icons.delete),
-                              onTap: () {
-                                remover(index);
-                              }),
-                        ),
+                        if (ret != null && ret) {
+                          carregaContatos();
+                         }
+                    },
+                    child: ListTile(
+                      leading: ClipOval(
+                        child: CircleAvatar(
+                            child: foto == null
+                                ? const Icon(Icons.image)
+                                : Image.file(
+                                    foto,
+                                  )),
                       ),
-                      onDismissed: (DismissDirection dis) {
-                        remover(index);
-                      },
-                    );
-                  })),
+                      title: Text(_contatos.contatos[index].nome.toString()),
+                      subtitle: Text(_contatos.contatos[index].telefone),
+                      trailing: InkWell(
+                          child: const Icon(Icons.delete),
+                          onTap: () {
+                            remover(index);
+                          }),
+                    ),
+                  ),
+                  onDismissed: (DismissDirection dis) {
+                    remover(index);
+                  },
+                );
+              }),
       floatingActionButton: FloatingActionButton(
         child: const FaIcon(FontAwesomeIcons.userPlus),
         onPressed: () async {
           var ret = await Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => AddContatoPage()),
+            MaterialPageRoute(builder: (context) => AddContatoPage(ContatoModel.vazio())),
           );
 
-          if (ret != null && ret) {}
+          if (ret != null && ret) {
+            carregaContatos();
+          }
         },
       ),
     );
