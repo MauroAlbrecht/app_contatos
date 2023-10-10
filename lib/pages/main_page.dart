@@ -1,7 +1,6 @@
 import 'package:app_contatos/models/contatos_back4app_model.dart';
 import 'package:app_contatos/pages/add_contato_page.dart';
 import 'package:app_contatos/repositories/contato_repository.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -25,37 +24,53 @@ class _MainPageState extends State<MainPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Lista de Contatos - Back4app')),
-      body: Container(child: ListView.builder(
-          itemCount: _contatos.contatos.length,
-          itemBuilder: (BuildContext bc, int index) {
-            return Dismissible(
-              key: Key(_contatos.contatos[index].objectId!),
-              child: GestureDetector(
-                onTap: () async {
-                 // var ret = await Navigator.push(
-                 //   context,
-                //    MaterialPageRoute(builder: (context) => EdicaoCepPage(_ceps.ceps[index]),),
-                 // );
-
-                 // if (ret != null && ret) {
-                //    carregaCeps();
-                //  }
-                },
-                child: ListTile(
-                  title: Text(_contatos.contatos[index].nome.toString()),
-                  subtitle: Text('${_contatos.contatos[index].nome}'),
-                  trailing: InkWell(
-                      child: const Icon(Icons.delete),
-                      onTap: () {
-                         remover(index);
-                      }),
+      body: loading
+          ? Center(
+              child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: const [
+                Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Text(
+                    'Carregando...',
+                    style: TextStyle(fontSize: 22),
+                  ),
                 ),
-              ),
-              onDismissed: (DismissDirection dis) {
-                remover(index);
-              },
-            );
-          })),
+                CircularProgressIndicator(),
+              ],
+            ))
+          : Container(
+              child: ListView.builder(
+                  itemCount: _contatos.contatos.length,
+                  itemBuilder: (BuildContext bc, int index) {
+                    return Dismissible(
+                      key: Key(_contatos.contatos[index].objectId!),
+                      child: GestureDetector(
+                        onTap: () async {
+                          // var ret = await Navigator.push(
+                          //   context,
+                          //    MaterialPageRoute(builder: (context) => EdicaoCepPage(_ceps.ceps[index]),),
+                          // );
+
+                          // if (ret != null && ret) {
+                          //    carregaCeps();
+                          //  }
+                        },
+                        child: ListTile(
+                          title: Text(_contatos.contatos[index].nome.toString()),
+                          subtitle: Text('${_contatos.contatos[index].telefone}'),
+                          trailing: InkWell(
+                              child: const Icon(Icons.delete),
+                              onTap: () {
+                                remover(index);
+                              }),
+                        ),
+                      ),
+                      onDismissed: (DismissDirection dis) {
+                        remover(index);
+                      },
+                    );
+                  })),
       floatingActionButton: FloatingActionButton(
         child: const FaIcon(FontAwesomeIcons.userPlus),
         onPressed: () async {
@@ -64,19 +79,18 @@ class _MainPageState extends State<MainPage> {
             MaterialPageRoute(builder: (context) => AddContatoPage()),
           );
 
-          if (ret != null && ret) {
-
-          }
+          if (ret != null && ret) {}
         },
       ),
     );
   }
 
-  void carregaContatos()async {
+  void carregaContatos() async {
     setLoading(true);
     _contatos = await repository.findAll();
     setLoading(false);
   }
+
   void setLoading(bool val) {
     setState(() {
       loading = val;
