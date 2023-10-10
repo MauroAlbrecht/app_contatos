@@ -26,11 +26,12 @@ class _AddContatoPageState extends State<AddContatoPage> {
     type: MaskAutoCompletionType.lazy,
   );
   File? foto;
+
   @override
   void initState() {
     controllerNome.text = widget.contato.nome;
     controllerTelefone.text = widget.contato.telefone;
-    if(widget.contato.imgUrl.isNotEmpty){
+    if (widget.contato.imgUrl.isNotEmpty) {
       foto = File(widget.contato.imgUrl);
     }
     super.initState();
@@ -51,34 +52,34 @@ class _AddContatoPageState extends State<AddContatoPage> {
                 onTap: () async {
                   final ImagePicker _picker = ImagePicker();
                   final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
-                  if(image != null) {
+                  if (image != null) {
                     widget.contato.imgUrl = image.path;
                     foto = File(widget.contato.imgUrl);
-                    setState(() {
-
-                    });
+                    setState(() {});
                   }
                 },
-                child: foto == null ? Container(
-                  width: 120, // Defina a largura do círculo
-                  height: 120, // Defina a altura do círculo
-                  decoration: const BoxDecoration(
-                    shape: BoxShape.circle, // Define a forma como círculo
-                    color: Colors.blue, // Define a cor de fundo do círculo
-                  ),
-                  child: const Center(
-                    child: Icon(
-                      FontAwesomeIcons.image, // Ícone desejado
-                      color: Colors.white, // Cor do ícone
-                      size: 50, // Tamanho do ícone
-                    ),
-                  ),
-                ): ClipOval(
-                  child: CircleAvatar(radius: 65,
-                      child: foto == null
-                          ? const Icon(Icons.image)
-                          : Image.file(foto!),),
-                ),
+                child: foto == null
+                    ? Container(
+                        width: 120, // Defina a largura do círculo
+                        height: 120, // Defina a altura do círculo
+                        decoration: const BoxDecoration(
+                          shape: BoxShape.circle, // Define a forma como círculo
+                          color: Colors.blue, // Define a cor de fundo do círculo
+                        ),
+                        child: const Center(
+                          child: Icon(
+                            FontAwesomeIcons.image, // Ícone desejado
+                            color: Colors.white, // Cor do ícone
+                            size: 50, // Tamanho do ícone
+                          ),
+                        ),
+                      )
+                    : ClipOval(
+                        child: CircleAvatar(
+                          radius: 65,
+                          child: foto == null ? const Icon(Icons.image) : Image.file(foto!),
+                        ),
+                      ),
               ),
               const SizedBox(
                 height: 10,
@@ -122,12 +123,15 @@ class _AddContatoPageState extends State<AddContatoPage> {
                 height: 20,
               ),
               ElevatedButton(
-                  onPressed: () {
-                    var contato = ContatoModel.vazio();
-                    contato.telefone = controllerTelefone.text;
-                    contato.nome = controllerNome.text;
-                    contato.imgUrl = widget.contato.imgUrl;
-                    repository.criar(contato);
+                  onPressed: () async {
+                    widget.contato.telefone = controllerTelefone.text;
+                    widget.contato.nome = controllerNome.text;
+                    widget.contato.imgUrl = widget.contato.imgUrl;
+                    if (widget.contato.objectId == null) {
+                      await repository.criar(widget.contato);
+                    } else {
+                      await repository.atualizar(widget.contato);
+                    }
 
                     Navigator.pop(context, true);
                   },
